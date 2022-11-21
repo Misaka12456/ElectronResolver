@@ -9,28 +9,78 @@ namespace MisakaCastle.ElectronResolver.Core
 	public struct ElectronAppInfoBase
 	{
 		[JsonProperty("name")]
-		public string Name { get; set; }
+		public string Name { get; set; } = string.Empty;
 
 		[JsonProperty("version")]
-		public string Version { get; set; }
+		public string Version { get; set; } = string.Empty;
 
 		[JsonProperty("author")]
 		public ElectronAppAuthor Author { get; set; }
 
 		[JsonProperty("description")]
-		public string Description { get; set; }
+		public string Description { get; set; } = string.Empty;
 
-		[JsonProperty("license", NullValueHandling = NullValueHandling.Include, Required = Required.AllowNull)]
-		public string? License { get; set; } 
+		[JsonProperty("license", NullValueHandling = NullValueHandling.Include)]
+		public string? License { get; set; } = null;
 
 		[JsonProperty("main")]
-		public string MainScript { get; set; }
+		public string MainScript { get; set; } = string.Empty;
 
 		[JsonProperty("electronLanguagesInfoPlistStrings")]
-		public Dictionary<string, ElectronLangPlistString> InfoPlistStrings { get; set; }
+		public Dictionary<string, ElectronLangPlistString> InfoPlistStrings { get; set; } = new();
 
 		[JsonProperty("dependencies")]
-		public Dictionary<string, string> Dependencies { get; set; }
+		public Dictionary<string, string> Dependencies { get; set; } = new();
+
+		public ElectronAppInfo ToAppInfo(string appNameGuessed, string installFolderPath)
+		{
+			return new ElectronAppInfo(Name, Author.Name ?? string.Empty, Version, Path.Combine(installFolderPath, appNameGuessed + ".exe"));
+		}
+	}
+
+	public struct ElectronAppInfoExtractedBase
+	{
+		[JsonProperty("name")]
+		public string Name { get; set; } = string.Empty;
+
+		[JsonProperty("version")]
+		public string Version { get; set; } = string.Empty;
+
+		[JsonProperty("distro")]
+		public string? Distro { get; set; } = null;
+
+		[JsonProperty("author")]
+		public ElectronAppAuthor Author { get; set; }
+
+		[JsonProperty("license", NullValueHandling = NullValueHandling.Include, Required = Required.AllowNull)]
+		public string? License { get; set; } = null;
+
+		[JsonProperty("main")]
+		public string MainScript { get; set; } = string.Empty;
+
+		[JsonProperty("private")]
+		public bool IsPrivatePackage { get; set; } = false;
+
+		[JsonProperty("scripts")]
+		public Dictionary<string, string> Scripts { get; set; } = new();
+
+		[JsonProperty("dependencies")]
+		public Dictionary<string, string> Dependencies { get; set; } = new();
+
+		[JsonProperty("devDependencies")]
+		public Dictionary<string, string> DevDependencies { get; set; } = new();
+
+		[JsonProperty("optionalDependencies")]
+		public Dictionary<string, string> OptionalDependencies { get; set; } = new();
+
+		[JsonProperty("repository")]
+		public ElectronUrlInfo? Repository { get; set; } = null;
+
+		[JsonProperty("bugs")]
+		public ElectronUrlInfo? BugsReport { get; set; } = null;
+
+		[JsonProperty("resolutions")]
+		public Dictionary<string, string> Resolutions { get; set; } = new();
 
 		public ElectronAppInfo ToAppInfo(string appNameGuessed, string installFolderPath)
 		{
@@ -43,8 +93,26 @@ namespace MisakaCastle.ElectronResolver.Core
 		[JsonProperty("name")]
 		public string? Name { get; set; }
 
-		[JsonProperty("email")]
-		public string? Email { get; set; }
+		[JsonProperty("email", Required = Required.DisallowNull)]
+		public string? Email { get; set; } = null;
+
+		public static implicit operator string(ElectronAppAuthor author)
+		{
+			if (author == null)
+			{
+				return string.Empty;
+			}
+			return author.Name ?? string.Empty;
+		}
+
+		public static implicit operator ElectronAppAuthor(string authorStr)
+		{
+			return new()
+			{
+				Name = authorStr,
+				Email = null
+			};
+		}
 	}
 
 	public struct ElectronLangPlistString
@@ -54,5 +122,14 @@ namespace MisakaCastle.ElectronResolver.Core
 
 		[JsonProperty("CFBundleName")]
 		public string Name { get; set; }
+	}
+
+	public struct ElectronUrlInfo
+	{
+		[JsonProperty("type")]
+		public string Type { get; set; } = string.Empty;
+
+		[JsonProperty("url")]
+		public string Url { get; set; } = string.Empty;
 	}
 }

@@ -11,6 +11,8 @@ using System.Windows.Threading;
 
 namespace MisakaCastle.ElectronResolver.Core
 {
+	public delegate void ElectronSearchHandler(object? sender, string currentPath, SearchResultType? resultType = null);
+
 	public class ElectronSearcher
 	{
 		public List<ElectronAppInfo> ElectronApps { get; private set; } = new List<ElectronAppInfo>();
@@ -18,7 +20,7 @@ namespace MisakaCastle.ElectronResolver.Core
 		private CancellationTokenSource searchCts;
 		private SearchResultType lastResultType = SearchResultType.Unknown;
 
-		public event EventHandler<string>? OnSearchFolderChanged;
+		public event ElectronSearchHandler? OnSearchFolderChanged;
 
 		public ElectronSearcher(out bool isLimitedPermission)
 		{
@@ -48,7 +50,7 @@ namespace MisakaCastle.ElectronResolver.Core
 				{
 					foreach (var dir in new DirectoryInfo(drive).EnumerateDirectories("*", new EnumerationOptions() { RecurseSubdirectories = true, MaxRecursionDepth = 256 }))
 					{
-						if (dir.Name == "Windows")
+						if (dir.Name == "Windows" && dir.Root.FullName == drive) // Ignore \Windows folder in the root directory of every drive
 						{
 							break;
 						}
@@ -70,42 +72,16 @@ namespace MisakaCastle.ElectronResolver.Core
 					break;
 				}
 				var dir = dirs.First();
-				using var appAsarStream = new MemoryStream();
 				try
 				{
 					Frm_Search.Instance.Invoke(() => OnSearchFolderChanged?.Invoke(this, dir.FullName));
-					bool isAppAsarExists = File.Exists(Path.Combine(dir.FullName, "resources", "app.asar"));
-					string appNameGuessed = dir.Name;
-					if (!isAppAsarExists)
+					foreach (var finder in IElectronFinder.Finders)
 					{
-						if (File.Exists(Path.Combine(dir.FullName, appNameGuessed + ".exe")))
+						if (finder.TryFindElectronApp(dir.FullName, out var app))
 						{
-							var zipLauncher = ZipFile.Read(Path.Combine(dir.FullName, appNameGuessed + ".exe"));
-							if (zipLauncher != null)
-							{
-								var innerAsar = zipLauncher["resources/app.asar"];
-								if (innerAsar != null)
-								{
-									using var innerAsarReader = innerAsar.OpenReader();
-									byte[] innerAsarData = new byte[innerAsar.UncompressedSize];
-									innerAsarReader.Read(innerAsarData, 0, innerAsarData.Length);
-									innerAsarReader.Close();
-									appAsarStream.Write(innerAsarData, 0, innerAsarData.Length);
-								}
-							}
+							ElectronApps.Add(app!);
+							break;
 						}
-					}
-					else
-					{
-						appAsarStream.Write(File.ReadAllBytes(Path.Combine(dir.FullName, "resources", "app.asar")));
-					}
-					if (appAsarStream.Length > 0)
-					{
-						appAsarStream.Seek(0, SeekOrigin.Begin);
-						using var reader = new AsarReader(appAsarStream);
-						var appBaseInfo = reader.ReadAppBaseInfo();
-						reader.Close();
-						ElectronApps.Add(appBaseInfo.ToAppInfo(appNameGuessed, dir.FullName));
 					}
 				}
 				catch
@@ -115,10 +91,9 @@ namespace MisakaCastle.ElectronResolver.Core
 				finally
 				{
 					dirs.Dequeue();
-					appAsarStream.Dispose();
 				}
 			}
-			Frm_Search.Instance.Invoke(() => OnSearchFolderChanged?.Invoke(this, "Completed"));
+			Frm_Search.Instance.Invoke(() => OnSearchFolderChanged?.Invoke(this, "Completed", lastResultType));
 		}
 
 		public void Abort()

@@ -12,7 +12,7 @@ namespace MisakaCastle.ElectronResolver.Core
 
 		private string versionStr = string.Empty;
 
-		public Version? Version { get => !string.IsNullOrEmpty(versionStr) ? Version.Parse(versionStr) : null; }
+		public Version? Version { get => !string.IsNullOrEmpty(versionStr) ? Version.Parse(versionStr.Split('-')[0].Split('_')[0]) : null; }
 
 		public string InstallPath { get; } = string.Empty;
 

@@ -31,17 +31,17 @@ namespace MisakaCastle.ElectronResolver
 			Win_Main.Instance.Searcher.StartSearch();
 		}
 
-		private void Searcher_OnSearchFolderChanged(object? sender, string e)
+		private void Searcher_OnSearchFolderChanged(object? sender, string currentPath, SearchResultType? resultType = null)
 		{
-			if (e == "Completed")
+			if (currentPath == "Completed")
 			{
 				Win_Main.Instance.Searcher.OnSearchFolderChanged -= Searcher_OnSearchFolderChanged;
-				Win_Main.Instance.RefreshList(Win_Main.Instance.Searcher.ElectronApps);
+				Win_Main.Instance.RefreshList(Win_Main.Instance.Searcher.ElectronApps, resultType.HasValue && resultType.Value == SearchResultType.Interrupted);
 				Close();
 			}
 			else
 			{
-				lbl_Status.Text = string.Format(I.S["Searching.Information"], e);
+				lbl_Status.Text = string.Format(I.S["Searching.Information"], currentPath);
 			}
 		}
 

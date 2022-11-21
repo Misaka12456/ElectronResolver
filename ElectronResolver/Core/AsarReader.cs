@@ -4,6 +4,8 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Numerics;
+using System.Diagnostics;
+using System.Linq;
 
 namespace MisakaCastle.ElectronResolver.Core
 {
@@ -31,8 +33,14 @@ namespace MisakaCastle.ElectronResolver.Core
 				{
 					_reader.BaseStream.Seek((long)packageJsonOffset, SeekOrigin.Current);
 				}
-				byte[] packageJsonRaw = _reader.ReadBytes(packageJsonSize);
-				var appInfo = JsonConvert.DeserializeObject<ElectronAppInfoBase>(Encoding.UTF8.GetString(packageJsonRaw))!;
+				var packageJsonRaw = _reader.ReadBytes(packageJsonSize).ToList();
+				if (packageJsonRaw.ToList().FindIndex(b => b == '{') != 0) // Full Data Coordinate
+				{
+					int idx = packageJsonRaw.ToList().FindIndex(b => b == '{');
+					_reader.ReadBytes(idx).ToList().ForEach(b => packageJsonRaw.Add(b));
+				}
+				Debug.WriteLine(Encoding.UTF8.GetString(packageJsonRaw.ToArray()));
+				var appInfo = JsonConvert.DeserializeObject<ElectronAppInfoBase>(Encoding.UTF8.GetString(packageJsonRaw.ToArray()))!;
 				return appInfo;
 			}
 			catch(Exception ex)

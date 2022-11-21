@@ -24,7 +24,14 @@ namespace MisakaCastle.ElectronResolver
 
 		internal void RefreshList(List<ElectronAppInfo> infoList, bool isInterrupted  = false)
 		{
-			// TODO
+			if (!isInterrupted)
+			{
+				lbl_Status.Content = $"Found {infoList.Count} Electron-based applications.";
+			}
+			else
+			{
+				lbl_Status.Content = $"Search procedure was interrupted. Found {infoList.Count} Electron-based applications.";
+			}
 		}
 
 		private void tsmi_StartSearch_Click(object sender, RoutedEventArgs e)
