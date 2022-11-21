@@ -1,9 +1,11 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace MisakaCastle.ElectronResolver
 {
 	public class Program
 	{
+		[STAThread]
 		public static int Main(string[] args)
 		{
 			switch (args.Length)

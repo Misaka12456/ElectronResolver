@@ -26,5 +26,12 @@ namespace MisakaCastle.ElectronResolver
 		{
 			// TODO
 		}
+
+		private void tsmi_StartSearch_Click(object sender, RoutedEventArgs e)
+		{
+			var search = new Frm_Search();
+			lbl_Status.Content = "Searching All Electron-Based apps...";
+			search.ShowDialog();
+		}
 	}
 }

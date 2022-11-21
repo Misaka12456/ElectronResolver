@@ -27,9 +27,9 @@ namespace MisakaCastle.ElectronResolver.Core
 			searchCts = new CancellationTokenSource();
 		}
 
-		public async Task SearchAsync()
+		public void StartSearch()
 		{
-			await searchTask;
+			searchTask.Start();
 		}
 
 		private void SearchMain()
@@ -46,8 +46,12 @@ namespace MisakaCastle.ElectronResolver.Core
 				}
 				try
 				{
-					foreach (var dir in new DirectoryInfo(drive).EnumerateDirectories())
+					foreach (var dir in new DirectoryInfo(drive).EnumerateDirectories("*", new EnumerationOptions() { RecurseSubdirectories = true, MaxRecursionDepth = 256 }))
 					{
+						if (dir.Name == "Windows")
+						{
+							break;
+						}
 						Frm_Search.Instance.Invoke(() => OnSearchFolderChanged?.Invoke(this, "PreSearching:" + dir.FullName));
 						if (searchCts.IsCancellationRequested)
 						{

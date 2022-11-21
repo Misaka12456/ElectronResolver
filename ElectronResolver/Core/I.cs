@@ -1,4 +1,5 @@
-﻿using Paraparty.JsonChan;
+﻿using Newtonsoft.Json.Linq;
+using Paraparty.JsonChan;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -15,13 +16,14 @@ namespace MisakaCastle.ElectronResolver.Core
 	{
 		public static I S { get; private set; }
 
-		public static string CurrentLangCode { get => CultureInfo.CurrentCulture.Name; }
+		public static string CurrentLangCode { get => CultureInfo.CurrentCulture.Name.ToLower(); }
 
 		public IDictionary<string, string> CurrentLangList { get => FullLangList.TryGetValue(CurrentLangCode, out var currLangList) ? currLangList : new Dictionary<string, string>(); }
 
 		public Dictionary<string, IDictionary<string, string>> FullLangList { get; }
 
-		public string this[string key] { get => CurrentLangList.TryGetValue(key, out string? value) ? value : throw new KeyNotFoundException($"Key '{key}' not found"); }
+		public string this[string key] { get => 
+				CurrentLangList.TryGetValue(key, out string? value) ? value : throw new KeyNotFoundException($"Key '{key}' not found"); }
 
 		static I()
 		{
@@ -32,12 +34,13 @@ namespace MisakaCastle.ElectronResolver.Core
 				asm.GetManifestResourceNames().Where(name => name.StartsWith("MisakaCastle.ElectronResolver.Languages") && name.EndsWith(".json")).ToList()
 					.ForEach(fileName =>
 					{
-						string langCode = fileName[(fileName.Replace(".json", string.Empty).LastIndexOf('.') + 1)..]; // Substring
-					byte[] data = asm.ReadResource(fileName);
+						byte[] data = asm.ReadResource(fileName);
+						fileName = fileName.Replace(".json", string.Empty);
+						string langCode = fileName[(fileName.LastIndexOf('.') + 1)..]; // Substring
 						if (data.Any())
 						{
 							string str = Encoding.UTF8.GetString(data);
-							var subDict = Json.Parse(str) as IDictionary<string, string>;
+							var subDict = JObject.Parse(str).ToObject<Dictionary<string, string>>();
 							if (subDict != null)
 							{
 								dict.Add(langCode, subDict);

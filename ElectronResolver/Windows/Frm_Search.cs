@@ -28,7 +28,7 @@ namespace MisakaCastle.ElectronResolver
 		private void Frm_Search_Load(object sender, EventArgs e)
 		{
 			Win_Main.Instance.Searcher.OnSearchFolderChanged += Searcher_OnSearchFolderChanged;
-			Win_Main.Instance.Searcher.SearchAsync().Start();
+			Win_Main.Instance.Searcher.StartSearch();
 		}
 
 		private void Searcher_OnSearchFolderChanged(object? sender, string e)

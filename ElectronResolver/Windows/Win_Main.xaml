@@ -4,11 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Electron Resolver" Height="450" Width="800">
+        Title="Electron Resolver" Height="450" Width="800" MaxHeight="450" MaxWidth="800">
     <Grid>
-        <Menu Margin="0,0,0,410" Width="800">
-            <MenuItem Header="Find All Electron!" Height="26">
+        <Menu Margin="0,0,0,382" Width="800">
+            <MenuItem x:Name="tsmi_StartSearch" Header="Find All Electron!" Height="26" Click="tsmi_StartSearch_Click">
             </MenuItem>
         </Menu>
+        <StatusBar Margin="0,376,0,0" Width="800">
+            <Label x:Name="lbl_Status">Ready</Label>
+        </StatusBar>
     </Grid>
 </Window>
