@@ -6,12 +6,31 @@
         mc:Ignorable="d"
         Title="Electron Resolver" Height="450" Width="800" MaxHeight="450" MaxWidth="800">
     <Grid>
-        <Menu Margin="0,0,0,382" Width="800">
-            <MenuItem x:Name="tsmi_StartSearch" Header="Find All Electron!" Height="26" Click="tsmi_StartSearch_Click">
+        <Menu x:Name="msp_Main" Margin="0,0,0,382" Width="800">
+            <MenuItem x:Name="tsmi_StartSearch" Header="Find All Electron!" Height="26" Click="Tsmi_StartSearch_Click">
             </MenuItem>
         </Menu>
         <StatusBar Margin="0,376,0,0" Width="800">
             <Label x:Name="lbl_Status">Ready</Label>
         </StatusBar>
+        <ListBox x:Name="lbx_eApps" Background ="Transparent" ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,53,0,59">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Tag="{Binding AppName}" Width="250" Height="auto" VerticalAlignment="Stretch"  HorizontalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Image Grid.Row="0" Source="{Binding AppIconSource}" Width="32" Height="32" />
+                        <TextBlock Grid.Row="1" Text="{Binding AppNameGuessed}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>

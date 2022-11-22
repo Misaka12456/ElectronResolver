@@ -1,5 +1,7 @@
 {
-	"General.Cancel": "取消",
-	"Searching.Title": "搜索中……",
-	"Searching.Information": "正在搜索所有基于Electron开发的程序...\n({0})"
+	"General.Ready": "就绪",
+	"Searching.Information": "正在搜索所有基于Electron开发的程序... ({0})",
+	"Searching.UninstReg": "正在搜索包含卸载信息的注册表项... ({0})",
+	"Uninstall.RegKeyNotFound": "无法在注册表中找到该程序的卸载信息，确定要直接删除该程序所在目录吗？\n(可能会导致出现残留的注册表项)",
+	"Uninstall.Confirm": "确定要卸载 {0} 吗？"
 }

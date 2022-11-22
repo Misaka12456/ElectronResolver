@@ -1,5 +1,7 @@
 {
-	"General.Cancel": "Cancel",
-	"Searching.Title": "Searching...",
-	"Searching.Information": "Searching all Electron-based Applications...\n({0})"
+	"General.Ready": "Ready",
+	"Searching.Information": "Searching all Electron-based Applications... ({0})",
+	"Searching.UninstReg": "Searching Uninstall Registry Information... ({0})",
+	"Uninstall.RegKeyNotFound": "Cannot found uninstall information from registry.\nDirectly remove the installation folder?\n(This may cause some residual registry key left)",
+	"Uninstall.Confirm": "Are you sure to uninstall {0}?"
 }

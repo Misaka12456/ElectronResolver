@@ -13,12 +13,6 @@ namespace MisakaCastle.ElectronResolver.Core
 	public interface IElectronFinder
 	{
 		public bool TryFindElectronApp(string path, out ElectronAppInfo? info);
-
-		public static List<IElectronFinder> Finders = new List<IElectronFinder>()
-		{
-			new ElectronPackedFinder(),
-			new ElectronExtractedFinder()
-		};
 	}
 
 	public class ElectronPackedFinder : IElectronFinder

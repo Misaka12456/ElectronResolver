@@ -6,7 +6,20 @@ using Newtonsoft.Json;
 
 namespace MisakaCastle.ElectronResolver.Core
 {
-	public struct ElectronAppInfoBase
+	public interface IElectronAppInfoBase
+	{
+		public string Name { get; set; }
+
+		public string Version { get; set; }
+
+		public ElectronAppAuthor Author { get; set; }
+
+		public string MainScript { get; set; }
+
+		public ElectronAppInfo ToAppInfo(string appNameGuessed, string installFolderPath);
+	}
+
+	public struct ElectronAppInfoBase : IElectronAppInfoBase
 	{
 		[JsonProperty("name")]
 		public string Name { get; set; } = string.Empty;
@@ -34,11 +47,19 @@ namespace MisakaCastle.ElectronResolver.Core
 
 		public ElectronAppInfo ToAppInfo(string appNameGuessed, string installFolderPath)
 		{
-			return new ElectronAppInfo(Name, Author.Name ?? string.Empty, Version, Path.Combine(installFolderPath, appNameGuessed + ".exe"));
+			string launcherPath = Path.Combine(installFolderPath, appNameGuessed + ".exe");
+			foreach (var finder in ElectronAppHelper.LauncherFinders)
+			{
+				if (finder.TryFindElectronLauncher(this, installFolderPath, out launcherPath!))
+				{
+					break;
+				}
+			}
+			return new ElectronAppInfo(Name, Author.Name ?? string.Empty, Version, launcherPath);
 		}
 	}
 
-	public struct ElectronAppInfoExtractedBase
+	public struct ElectronAppInfoExtractedBase : IElectronAppInfoBase
 	{
 		[JsonProperty("name")]
 		public string Name { get; set; } = string.Empty;
@@ -84,7 +105,15 @@ namespace MisakaCastle.ElectronResolver.Core
 
 		public ElectronAppInfo ToAppInfo(string appNameGuessed, string installFolderPath)
 		{
-			return new ElectronAppInfo(Name, Author.Name ?? string.Empty, Version, Path.Combine(installFolderPath, appNameGuessed + ".exe"));
+			string launcherPath = Path.Combine(installFolderPath, appNameGuessed + ".exe");
+			foreach (var finder in ElectronAppHelper.LauncherFinders)
+			{
+				if (finder.TryFindElectronLauncher(this, installFolderPath, out launcherPath!))
+				{
+					break;
+				}
+			}
+			return new ElectronAppInfo(Name, Author.Name ?? string.Empty, Version, launcherPath);
 		}
 	}
 
